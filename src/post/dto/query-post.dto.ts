@@ -17,4 +17,12 @@ export class QueryPostDto extends PaginationDto {
   @IsOptional()
   @IsEnum(['latest', 'hot'])
   orderBy?: 'latest' | 'hot' = 'latest';
+
+  @IsOptional()
+  @IsUUID()
+  likedBy?: string; 
+
+  @IsOptional()
+  @IsUUID()
+  collectedBy?: string; 
 }

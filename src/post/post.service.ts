@@ -117,7 +117,7 @@ export class PostService {
     const skip = (page - 1) * limit;
 
     // 基础查询
-    const qb: SelectQueryBuilder<Post> = this.postRepository
+    const qb = this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.author', 'author')
       .leftJoinAndSelect('post.city', 'city')
@@ -136,7 +136,18 @@ export class PostService {
       qb.andWhere(':tag = ANY(post.tags)', { tag: queryDto.tag });
     }
 
-    // ====== 排序 ======
+    if (queryDto.likedBy) {
+      qb.innerJoin('post.likes', 'postLike', 'postLike.user_id = :likedBy', { 
+        likedBy: queryDto.likedBy 
+      });
+    }
+
+    if (queryDto.collectedBy) {
+      qb.innerJoin('post.collects', 'postCollect', 'postCollect.user_id = :collectedBy', { 
+        collectedBy: queryDto.collectedBy 
+      });
+    }
+
     // ====== 排序 ======
     if (queryDto.orderBy === 'hot') {
       // 热门：按点赞数 → 评论数 → 时间 多字段排序
@@ -190,8 +201,8 @@ export class PostService {
       type: post.type,
       tags: post.tags,
       address: post.address,
-      latitude: post.latitude,
-      longitude: post.longitude,
+      latitude: post.latitude ? Number(post.latitude) : null,
+      longitude: post.longitude ? Number(post.longitude) : null,
       likeCount: post.likeCount,
       commentCount: post.commentCount,
       shareCount: post.shareCount,
