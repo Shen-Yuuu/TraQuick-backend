@@ -14,4 +14,8 @@ export class UpdateUserDto {
   @IsString()
   @MaxLength(200)
   bio?: string;
+
+  @IsOptional()
+  @IsString()
+  coverImage?: string;
 }

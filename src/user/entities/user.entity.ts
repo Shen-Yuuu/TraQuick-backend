@@ -52,6 +52,9 @@ export class User extends BaseEntity {
   @Column({ name: 'posts_count', default: 0 })
   postsCount: number;
 
+  @Column({ name: 'cover_image', type: 'varchar', default: '' })
+  coverImage: string;
+
   // ====== 关系 ======
 
   @OneToMany(() => Post, (post) => post.author)

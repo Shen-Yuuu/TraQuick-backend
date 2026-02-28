@@ -146,6 +146,9 @@ export class UserService {
     if (updateUserDto.bio !== undefined) {
       user.bio = updateUserDto.bio;
     }
+    if (updateUserDto.coverImage !== undefined) {
+      user.coverImage = updateUserDto.coverImage;
+    }
 
     return await this.userRepository.save(user);
   }
