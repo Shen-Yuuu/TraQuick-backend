@@ -148,6 +148,34 @@ export class PostService {
       });
     }
 
+    if (queryDto.feedType && currentUserId) {
+      if (queryDto.feedType === 'following') {
+        // 只看我关注的人的帖子
+        qb.innerJoin(
+          'user_follows', 
+          'uf', 
+          'uf.following_id = author.id AND uf.follower_id = :currentUserId',
+          { currentUserId }
+        );
+      } else if (queryDto.feedType === 'friends') {
+        // 只看互相关注（朋友）的帖子
+        // 条件1: 我关注了他
+        qb.innerJoin(
+          'user_follows', 
+          'uf1', 
+          'uf1.following_id = author.id AND uf1.follower_id = :currentUserId',
+          { currentUserId }
+        );
+        // 条件2: 他也关注了我
+        qb.innerJoin(
+          'user_follows', 
+          'uf2', 
+          'uf2.follower_id = author.id AND uf2.following_id = :currentUserId',
+          { currentUserId }
+        );
+      }
+    }
+
     // ====== 排序 ======
     if (queryDto.orderBy === 'hot') {
       // 热门：按点赞数 → 评论数 → 时间 多字段排序

@@ -25,4 +25,8 @@ export class QueryPostDto extends PaginationDto {
   @IsOptional()
   @IsUUID()
   collectedBy?: string; 
+  
+  @IsOptional()
+  @IsEnum(['following', 'friends'])
+  feedType?: 'following' | 'friends';
 }
