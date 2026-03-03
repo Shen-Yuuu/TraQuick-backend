@@ -25,6 +25,7 @@ export interface UserProfile {
   citiesCount: number;
   countriesCount: number;
   postsCount: number;
+  coverImage: string;
   createdAt: Date;
 }
 
@@ -119,6 +120,7 @@ export class UserService {
       citiesCount: user.citiesCount,
       countriesCount: user.countriesCount,
       postsCount: user.postsCount,
+      coverImage: user.coverImage,
       createdAt: user.createdAt,
     };
 
@@ -321,6 +323,7 @@ export class UserService {
       citiesCount: f.following.citiesCount,
       countriesCount: f.following.countriesCount,
       postsCount: f.following.postsCount,
+      coverImage: f.following.coverImage,
       createdAt: f.following.createdAt,
     }));
 
@@ -358,6 +361,7 @@ export class UserService {
       citiesCount: f.follower.citiesCount,
       countriesCount: f.follower.countriesCount,
       postsCount: f.follower.postsCount,
+      coverImage: f.follower.coverImage,
       createdAt: f.follower.createdAt,
     }));
 
