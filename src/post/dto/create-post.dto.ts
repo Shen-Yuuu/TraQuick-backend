@@ -36,6 +36,10 @@ export class CreatePostDto {
 
   @IsOptional()
   @IsString()
+  cityName?: string;
+
+  @IsOptional()
+  @IsString()
   address?: string;
 
   @IsOptional()

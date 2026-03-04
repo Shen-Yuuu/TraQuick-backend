@@ -14,6 +14,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { QueryPostDto } from './dto/query-post.dto';
 import { Inject, forwardRef } from '@nestjs/common';
 import { MessageService } from '../message/message.service';
+import { City } from '../city/entities/city.entity';
 
 // 列表返回的单条数据结构
 export interface PostListItem {
@@ -71,6 +72,9 @@ export class PostService {
     private readonly messageService: MessageService,
 
     private readonly userService: UserService,
+
+    @InjectRepository(City)
+    private readonly cityRepository: Repository<City>,
   ) {}
 
   // ============================================================
@@ -95,8 +99,37 @@ export class PostService {
     if (createPostDto.cityId) {
       post.city = { id: createPostDto.cityId } as any;
     }
+    else if (createPostDto.cityName) {
+      // 提取核心城市名
+      const coreName = createPostDto.cityName.replace(/市|省|区|县|特别行政区/g, '');
+      
+      // 先查一下是不是其实数据库里有，只是前端没查到
+      let city = await this.cityRepository.createQueryBuilder('city')
+        .where('city.name LIKE :name', { name: `%${coreName}%` })
+        .getOne();
+        
+      // 如果真没有，就在此自动建城！
+      if (!city) {
+        city = this.cityRepository.create({
+          name: coreName,
+          country: '', 
+          countryCode: '',
+          latitude: createPostDto.latitude || 0,
+          longitude: createPostDto.longitude || 0,
+          coverImage: 'https://images.unsplash.com/photo-1480796927426-f609979314bd', // 默认图
+          description: `这是第一位探索者在 ${coreName} 留下的足迹。`
+        });
+        city = await this.cityRepository.save(city);
+      }
+      
+      post.city = city;
+    }
 
     const savedPost = await this.postRepository.save(post);
+
+    if (post.city) {
+      await this.cityRepository.increment({ id: post.city.id }, 'postsCount', 1);
+    }
 
     // 更新用户发帖计数
     author.postsCount += 1;
