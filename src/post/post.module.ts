@@ -7,10 +7,11 @@ import { PostController } from './post.controller';
 import { PostService } from './post.service';
 import { UserModule } from '../user/user.module';
 import { MessageModule } from '../message/message.module';
+import { City } from '../city/entities/city.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Post, PostLike, PostCollect]),
+    TypeOrmModule.forFeature([Post, PostLike, PostCollect,City]),
     UserModule,
     forwardRef(() => MessageModule),
   ],
