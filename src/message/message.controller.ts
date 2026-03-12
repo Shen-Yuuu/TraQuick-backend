@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   Put,
+  Post,
+  Body,
   Param,
   Query,
   UseGuards,
@@ -57,5 +59,24 @@ export class MessageController {
   ) {
     const userId = req.user.sub;
     return await this.messageService.markAllAsRead(userId, type);
+  }
+
+    /**
+   * POST /api/messages/share - 转发帖子给好友
+   */
+  @UseGuards(JwtAuthGuard)
+  @Post('share')
+  async sharePost(@Body() body: { targetUserId: string, postId: string, text: string }, @Request() req: any) {
+    const senderId = req.user.sub;
+    
+    // 借用之前写好的 MessageService.create 发送一条私信类型的消息
+    return await this.messageService.create({
+      userId: body.targetUserId,       // 接收方
+      type: 'system',                  // 或者如果你之前加了 'dm' / 'share' 类型更好，这里暂用 system 代替私信
+      title: '收到了新的分享',
+      content: body.text ? `给你分享了一篇帖子留言：${body.text}` : '给你分享了一篇非常有意思的帖子！',
+      relatedUserId: senderId,         // 发送方
+      relatedPostId: body.postId,      // 关联的帖子
+    });
   }
 }
